@@ -15,9 +15,10 @@ import {
   InputRightElement
 } from '@chakra-ui/react';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { API_URL, BASIC_AUTH_TOKEN } from '../config/apiConfig';
+import { SERVICES } from '../config'
+import { BASIC_AUTH, STORAGES } from '../constant'
+import { useRouter } from 'next/navigation';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 
 export default function FormLogin() {
@@ -41,7 +42,7 @@ export default function FormLogin() {
   }
 
   const handleLoginSuccess = (res) => {
-    localStorage.setItem('access_token', res.data.data);
+    localStorage.setItem(STORAGES.ACCESS_TOKEN, res.data.data);
     displayToast("Login Success", res.data.message, "success");
     router.push('/');
   }
@@ -56,16 +57,13 @@ export default function FormLogin() {
 
   const handleLogin = async () => {
     setIsLoading(true);
+    const payload = {
+      email,
+      password
+    };
 
     try {
-      const res = await axios.post(`${API_URL}/login`, {
-        email: email,
-        password: password
-      },{
-        headers: {
-          Authorization: BASIC_AUTH_TOKEN
-        }
-      });
+      const res = await axios.post(`${SERVICES.BASE_URL}/login`, payload, BASIC_AUTH.token);
 
       handleLoginSuccess(res);
       
@@ -124,7 +122,7 @@ export default function FormLogin() {
             <Stack spacing={5}>
               <Button
                 isLoading={isLoading}
-                loadingText='loading...'
+                loadingText='Loading...'
                 colorScheme="teal"
                 fontSize="sm"
                 onClick={handleLogin}
