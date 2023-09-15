@@ -14,12 +14,67 @@ import {
   Text,
   useColorModeValue,
   Link,
+  useToast,
 } from '@chakra-ui/react'
+import axios from 'axios';
 import { useState } from 'react'
+import { SERVICES } from '@/config';
+import { BASIC_AUTH } from '@/constant';
+import { useRouter } from 'next/navigation';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
 
 export default function FormSignup() {
-  const [showPassword, setShowPassword] = useState(false)
+  const toast = useToast();
+  const router = useRouter();
+
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const displayToast = (title, description, status) => {
+    toast({
+      position: "top-right",
+      title,
+      description,
+      status,
+      duration: 5000,
+      isClosable: true, 
+    });
+  }
+
+  const handleLoginSuccess = (res) => {
+    displayToast("Register User Success", res.data.message, "success");
+    router.push('/login');
+  }
+
+  const handleLoginError = (error) => {
+    if (error.response) {
+      displayToast("Register User Error", error.response.data.message, "error");
+    } else {
+      displayToast("Register User Error", "An error occurred while registering user. Please try again." ,"error");
+    }
+  }
+
+  const handleSignup = async () => {
+    setIsLoading(true);
+    const payload = {
+      name,
+      email,
+      password
+    };
+
+    try {
+      const res = await axios.post(`${SERVICES.BASE_URL}/register`, payload, BASIC_AUTH.token);
+
+      handleLoginSuccess(res);
+    } catch (error) {
+      handleLoginError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Flex
@@ -44,16 +99,28 @@ export default function FormSignup() {
           <Stack spacing={4}>
             <FormControl id="name">
               <FormLabel>Name</FormLabel>
-              <Input type="text" />
+              <Input 
+                type="text" 
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
             </FormControl>
             <FormControl id="email" isRequired>
               <FormLabel>Email address</FormLabel>
-              <Input type="email" />
+              <Input
+               type="email"
+               value={email}
+               onChange={(e) => setEmail(e.target.value)}
+              />
             </FormControl>
             <FormControl id="password" isRequired>
               <FormLabel>Password</FormLabel>
               <InputGroup>
-                <Input type={showPassword ? 'text' : 'password'} />
+                <Input
+                 type={showPassword ? 'text' : 'password'}
+                 value={password}
+                 onChange={(e) => setPassword(e.target.value)} 
+                />
                 <InputRightElement h={'full'}>
                   <Button
                     variant={'ghost'}
@@ -65,9 +132,12 @@ export default function FormSignup() {
             </FormControl>
             <Stack spacing={5} pt={2}>
               <Button
-                loadingText="Submitting"
+                isLoading={isLoading}
+                loadingText="Submitting..."
                 fontSize="sm"
-                colorScheme="teal">
+                colorScheme="teal"
+                onClick={handleSignup}
+              >
                 Sign up
               </Button>
               <Text align={'center'}>
