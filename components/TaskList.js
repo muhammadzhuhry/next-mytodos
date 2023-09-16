@@ -21,6 +21,7 @@ import { useRouter } from 'next/navigation';
 import { setJWTAuth } from '@/utils/formatter';
 import { getLocalStorage } from '@/utils/storage';
 import { AddIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
+import AddTaskModal from './AddTaskModal';
 
 export default function TaskList() {
   // next enhancement:
@@ -31,6 +32,10 @@ export default function TaskList() {
   const router = useRouter();
 
   const [tasks, setTasks] = useState([]);
+  const [addTaskOpen, setAddTaskOpen] = useState(false);
+
+  const onOpenAddTask = () => setAddTaskOpen(true);
+  const onCloseAddTask = () => setAddTaskOpen(false);
 
   const displayToast = useCallback((title, description, status) => {
     toast({
@@ -53,12 +58,14 @@ export default function TaskList() {
     const JWT_AUTH = setJWTAuth(accessToken);
 
     const handleSuccess = (res) => {
+      console.log('masuk suces')
       const response = res.data;
       setTasks(response.data);
       displayToast("Success fetch tasks list", res.data.message, "success");
     }
   
     const handleError = (error) => {
+      console.log(error)
       if (error.response) {
         displayToast("Failed to fetch tasks list", error.response.data.message, "error");
       } else {
@@ -90,9 +97,13 @@ export default function TaskList() {
         width='100%'
         leftIcon={<AddIcon />}
         variant={'solid'}
+        onClick={onOpenAddTask}
       >
         Add New Task
       </Button>
+
+      <AddTaskModal isOpen={addTaskOpen} onClose={onCloseAddTask} />
+
       <TableContainer>
       <Table variant='striped' size='md'>
         <Thead>
