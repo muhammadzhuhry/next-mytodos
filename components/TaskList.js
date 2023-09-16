@@ -23,6 +23,10 @@ import { getLocalStorage } from '@/utils/storage';
 import { AddIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 
 export default function TaskList() {
+  // next enhancement:
+  // 1. handling when token expired
+  // 2. fix why hit api twice
+
   const toast = useToast();
   const router = useRouter();
 
