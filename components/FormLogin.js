@@ -44,7 +44,7 @@ export default function FormLogin() {
   const handleLoginSuccess = (res) => {
     localStorage.setItem(STORAGES.ACCESS_TOKEN, res.data.data);
     displayToast("Login Success", res.data.message, "success");
-    router.push('/');
+    router.push('/tasks');
   }
 
   const handleLoginError = (error) => {
