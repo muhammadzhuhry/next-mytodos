@@ -2,7 +2,7 @@ import { Button, FormControl, FormLabel, Input, Modal, ModalBody, ModalContent, 
 import React, { useState } from 'react'
 import axios from 'axios';
 import { SERVICES } from '@/config';
-import { BASIC_AUTH, STORAGES } from '@/constant';
+import { STORAGES } from '@/constant';
 import { useRouter } from 'next/navigation';
 import { getLocalStorage } from '@/utils/storage';
 import { setJWTAuth } from '@/utils/formatter';
