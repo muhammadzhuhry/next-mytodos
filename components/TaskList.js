@@ -22,6 +22,7 @@ import { setJWTAuth } from '@/utils/formatter';
 import { getLocalStorage } from '@/utils/storage';
 import { AddIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import AddTaskModal from './AddTaskModal';
+import DeleteTaskModal from './DeleteTaskModal';
 
 export default function TaskList() {
   // next enhancement:
@@ -32,10 +33,20 @@ export default function TaskList() {
   const router = useRouter();
 
   const [tasks, setTasks] = useState([]);
-  const [addTaskOpen, setAddTaskOpen] = useState(false);
+  const [modalInsert, setModalInsert] = useState(false);
+  const [modalDelete, setModalDelete] = useState(false);
+  const [taskId, setTaskId] = useState(null);
 
-  const onOpenAddTask = () => setAddTaskOpen(true);
-  const onCloseAddTask = () => setAddTaskOpen(false);
+
+  const onOpenInsert = () => setModalInsert(true);
+  const onCloseInsert = () => setModalInsert(false);
+
+  const onOpenDelete = (taskId) => {
+    setTaskId(taskId);
+    setModalDelete(true);
+  }
+  const onCloseDelete = () => setModalDelete(false);
+
 
   const displayToast = useCallback((title, description, status) => {
     toast({
@@ -97,12 +108,12 @@ export default function TaskList() {
         width='100%'
         leftIcon={<AddIcon />}
         variant={'solid'}
-        onClick={onOpenAddTask}
+        onClick={onOpenInsert}
       >
         Add New Task
       </Button>
 
-      <AddTaskModal isOpen={addTaskOpen} onClose={onCloseAddTask} />
+      <AddTaskModal isOpen={modalInsert} onClose={onCloseInsert} />
 
       <TableContainer>
       <Table variant='striped' size='md'>
@@ -136,7 +147,10 @@ export default function TaskList() {
                     mx={2}
                     colorScheme='red'
                     variant='outline'
+                    onClick={() => onOpenDelete(task.id)}
                   />
+
+                  <DeleteTaskModal isOpen={modalDelete} onClose={onCloseDelete} taskId={taskId} />
                 </Td>
               </Tr>
             )) 
